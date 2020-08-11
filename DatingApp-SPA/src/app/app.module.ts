@@ -12,6 +12,7 @@ import { JwtModule } from '@auth0/angular-jwt';
 import { NgxGalleryModule } from '@kolkov/ngx-gallery';
 import { FileUploadModule } from 'ng2-file-upload';
 import { TimeagoModule } from 'ngx-timeago';
+import { ModalModule } from 'ngx-bootstrap/modal';
 
 import { AppComponent } from './app.component';
 import { NavComponent } from './nav/nav.component';
@@ -28,6 +29,10 @@ import { PhotoEditorComponent } from './members/photo-editor/photo-editor.compon
 import { MemberMessagesComponent } from './members/member-messages/member-messages.component';
 import { ListsComponent } from './lists/lists.component';
 import { MessagesComponent } from './messages/messages.component';
+import { AdminPanelComponent } from './admin/admin-panel/admin-panel.component';
+import { UserManagementComponent } from './admin/user-management/user-management.component';
+import { PhotoManagementComponent } from './admin/photo-management/photo-management.component';
+import { RolesModalComponent } from './admin/roles-modal/roles-modal.component';
 import { appRoutes } from './routes';
 import { AlertifyService } from './_services/alertify.service';
 import { UserService } from './_services/user.service';
@@ -38,7 +43,8 @@ import { MemberEditResolver } from './_resolvers/member-edit.resolver';
 import { MessagesResolver } from './_resolvers/messages.resolver';
 import { PreventUnsavedChanges } from './_guards/prevent-unsaved-changes.guard';
 import { ListsResolver } from './_resolvers/lists.resolver';
-
+import { HasRoleDirective } from './_directives/hasRole.directive';
+import { AdminService } from './_services/admin.service';
 
 
 export function tokenGetter(){
@@ -59,7 +65,12 @@ export function tokenGetter(){
       MemberDetailComponent,
       MemberEditComponent,
       PhotoEditorComponent,
-      MemberMessagesComponent
+      MemberMessagesComponent,
+      AdminPanelComponent,
+      HasRoleDirective,
+      UserManagementComponent,
+      PhotoManagementComponent,
+      RolesModalComponent
    ],
    imports: [
       BrowserModule,
@@ -74,6 +85,7 @@ export function tokenGetter(){
       ButtonsModule.forRoot(),
       TabsModule.forRoot(),
       RouterModule.forRoot(appRoutes),
+      ModalModule.forRoot(),
       TimeagoModule.forRoot(),
       NgxGalleryModule,
       FileUploadModule,
@@ -96,10 +108,10 @@ export function tokenGetter(){
       MemberEditResolver,
       PreventUnsavedChanges,
       ListsResolver,
-      MessagesResolver
+      MessagesResolver,
+      AdminService
    ],
-   bootstrap: [
-      AppComponent
-   ]
+   entryComponents: [RolesModalComponent],
+   bootstrap: [AppComponent]
 })
 export class AppModule { }

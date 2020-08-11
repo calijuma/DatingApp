@@ -26,9 +26,15 @@ namespace DatingApp.API.Data
             _context.Remove(entity);
         }
 
-        public async Task<User> GetUser(int id)
+        public async Task<User> GetUser(int id, bool isCurrentUser)
         {
-            var user = await _context.Users.Include(p =>p.Photos).FirstOrDefaultAsync(u => u.ID == id);
+            var query = _context.Users.Include(p =>p.Photos).AsQueryable();
+
+            if (isCurrentUser)
+                query = query.IgnoreQueryFilters();
+            
+            var user = await query.FirstOrDefaultAsync(u => u.Id == id);
+
             return user;
         }
 
@@ -38,7 +44,7 @@ namespace DatingApp.API.Data
             var users = _context.Users.Include(p =>p.Photos).OrderByDescending(u => u.LastActive).AsQueryable();
             
             // Filter data to exclude current user from the list
-            users = users.Where(u => u.ID != userParams.UserId);
+            users = users.Where(u => u.Id != userParams.UserId);
 
             // Filter data to return the oposite gender of the current user
             users = users.Where(u => u.Gender == userParams.Gender);
@@ -47,12 +53,12 @@ namespace DatingApp.API.Data
             if (userParams.Likers)
             {
                 var userLikers = await GetUserLikes(userParams.UserId, userParams.Likers);
-                users = users.Where(u => userLikers.Contains(u.ID));
+                users = users.Where(u => userLikers.Contains(u.Id));
             }
             if (userParams.Likees)
             {
                  var userLikees = await GetUserLikes(userParams.UserId, userParams.Likers);
-                users = users.Where(u => userLikees.Contains(u.ID));
+                users = users.Where(u => userLikees.Contains(u.Id));
             }
 
 
@@ -86,7 +92,7 @@ namespace DatingApp.API.Data
             var user = await _context.Users
                 .Include(x => x.Likers)
                 .Include(x => x.Likees)
-                .FirstOrDefaultAsync(u => u.ID == id);
+                .FirstOrDefaultAsync(u => u.Id == id);
 
             if (likers)
             {
@@ -105,7 +111,7 @@ namespace DatingApp.API.Data
 
         public async Task<Photo> GetPhoto(int id)
         {
-            var photo = await _context.Photos.FirstOrDefaultAsync(p => p.Id == id);
+            var photo = await _context.Photos.IgnoreQueryFilters().FirstOrDefaultAsync(p => p.Id == id);
             return photo;
         }
 
